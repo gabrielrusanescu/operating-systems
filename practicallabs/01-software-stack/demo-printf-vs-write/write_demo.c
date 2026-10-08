@@ -16,6 +16,7 @@
 	 ((ta).tv_nsec - (tb).tv_nsec) / 1000)
 
 #define NUM_ROUNDS 1000000
+//#define NUM_ROUNDS 20
 
 static const char line[] = "Hello, World!\n";
 
