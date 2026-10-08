@@ -27,6 +27,13 @@ int main(void)
 	 * TODO: Use strcpy() to copy the strings John, George, Paul, Joel.
 	 * Use a loop going from 0 to NUM_ROUNDS.
 	 */
+	for(int i = 0; i < NUM_ROUNDS; i++){
+		big_string[0] = '\0';
+		strcpy(big_string, "John ");
+		strcpy(big_string+5, "George ");
+		strcpy(big_string+12, "Paul ");
+		strcpy(big_string+17, "Joel ");
+	}
 	clock_gettime(CLOCK_REALTIME, &time_after);
 	printf("time passed %ld microseconds\n", diff_us(time_after, time_before));
 
