@@ -23,8 +23,9 @@ size_t my_strlen(const char *s)
 	 * Walk forward from s until you hit '\0'. Return how many bytes you
 	 * walked past (not counting the '\0' itself).
 	 */
-
-	return 0;
+	size_t len = 0;
+	while(s[len] != '\0') len++;
+	return len;
 }
 
 char *my_strcpy(char *dest, const char *src)
@@ -35,7 +36,12 @@ char *my_strcpy(char *dest, const char *src)
 	 * Careful: the '\0' must be copied too, or dest is not a string.
 	 * Remember what the function must return -- check the header.
 	 */
-
+	size_t lensrc = 0;
+	while(src[lensrc] != '\0'){
+		dest[lensrc] = src[lensrc];
+		lensrc++;
+	}
+	dest[lensrc] = '\0';
 	return dest;
 }
 
@@ -52,7 +58,7 @@ char *my_strcat(char *dest, const char *src)
 	 * Ask yourself: how much work is step 1, and does it depend on the
 	 * length of dest or the length of src?
 	 */
-
+	my_strcpy(dest + my_strlen(dest), src);
 	return dest;
 }
 
@@ -68,6 +74,11 @@ void *my_memcpy(void *dest, const void *src, size_t n)
 	 *           unsigned char *d = dest;
 	 *           const unsigned char *s = src;
 	 */
-
+	unsigned char *d = dest;
+	const unsigned char *s = src;
+	while(n > 0){
+		*d++ = *s++;
+		n--;
+	}
 	return dest;
 }
