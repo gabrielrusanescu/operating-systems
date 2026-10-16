@@ -25,7 +25,7 @@ long my_syscall(long number, long arg1, long arg2, long arg3,
 }
 
 /* TODO 1: define the x86-64 syscall number for nanosleep here. */
-#define SYS_nanosleep	/* ??? */
+#define SYS_nanosleep 35	/* ??? */
 
 /*
  * TODO 2: nanosleep(2) wrapper.
@@ -42,7 +42,8 @@ long my_syscall(long number, long arg1, long arg2, long arg3,
 long my_nanosleep(const struct timespec *req, struct timespec *rem)
 {
 	/* TODO: replace this with a call to my_syscall(...). */
-	return -1;
+	//return -1;
+	return my_syscall(SYS_nanosleep, (long) req, (long) rem, 0, 0, 0, 0);
 }
 
 /*
@@ -55,9 +56,15 @@ long my_nanosleep(const struct timespec *req, struct timespec *rem)
  * unsigned int sleep(unsigned int seconds);
  * Return 0 (the number of seconds left unslept; keep it simple here).
  */
+
+
 unsigned int my_sleep(unsigned int seconds)
 {
 	/* TODO: build a struct timespec and call my_nanosleep(). */
+	struct timespec ts;
+        ts.tv_sec = seconds;
+        ts.tv_nsec = 0;
+        my_nanosleep(&ts, NULL);
 	return 0;
 }
 
