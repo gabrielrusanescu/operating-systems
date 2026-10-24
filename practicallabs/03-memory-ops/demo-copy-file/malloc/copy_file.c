@@ -30,7 +30,11 @@ int main(int argc, char *argv[])
 	 * out of main().  Look at the labels at the end of the function: which
 	 * ways out do they already cover?
 	 */
-
+	char *buffer = malloc(BUFFER_SIZE);
+	if (buffer == NULL) {
+		perror("malloc");
+		goto fail;
+	}
 	/* Open source file for reading. */
 	src = fopen(src_path, "rb");
 	if (!src) {
@@ -53,6 +57,11 @@ int main(int argc, char *argv[])
 		 * treat that as an error, and leave through the label that
 		 * undoes what is open at this point.
 		 */
+		size_t byteswritten = fwrite(buffer, 1, bytes_read, dst);
+		if (byteswritten < bytes_read) {
+			perror("fwrite");
+			goto fail_dst;
+		}
 	}
 
 	if (ferror(src)) {
@@ -64,7 +73,7 @@ int main(int argc, char *argv[])
 	fclose(src);
 
 	/* TODO 3: the way out everybody remembers. */
-
+	free(buffer);
 	printf("Copied '%s' -> '%s'\n", src_path, dst_path);
 
 	return 0;
