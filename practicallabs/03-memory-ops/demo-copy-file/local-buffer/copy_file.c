@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	 * allocate or release it.  The stack is not large, though.  `ulimit -s`
 	 * prints its limit; compare it with BUFFER_SIZE.
 	 */
-
+	char buffer[BUFFER_SIZE];
 	const char *src_path;
 	const char *dst_path;
 	size_t bytes_read;
@@ -53,6 +53,11 @@ int main(int argc, char *argv[])
 		 * treat that as an error, and leave through the label that
 		 * undoes what is open at this point.
 		 */
+		size_t byteswritten = fwrite(buffer, 1, bytes_read, dst);
+		if (byteswritten < bytes_read) {
+			perror("fwrite");
+			goto fail_dst;
+		}
 	}
 
 	if (ferror(src)) {
