@@ -1,6 +1,7 @@
 #include <stdio.h>
 
-#define SIZE 8192
+//#define SIZE 8192
+#define SIZE 64
 
 char x[SIZE][SIZE];
 
