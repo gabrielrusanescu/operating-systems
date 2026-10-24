@@ -14,6 +14,8 @@
  * releases it.  After building, `size copy_file` shows where it went.
  */
 
+char buffer[BUFFER_SIZE];
+
 int main(int argc, char *argv[])
 {
 	const char *src_path;
@@ -52,6 +54,11 @@ int main(int argc, char *argv[])
 		 * treat that as an error, and leave through the label that
 		 * undoes what is open at this point.
 		 */
+		size_t byteswritten = fwrite(buffer, 1, bytes_read, dst);
+		if (byteswritten < bytes_read) {
+			perror("fwrite");
+			goto fail_dst;
+		}
 	}
 
 	if (ferror(src)) {
