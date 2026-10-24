@@ -27,7 +27,11 @@ static long my_syscall(long number, long arg1, long arg2, long arg3,
 }
 
 /* TODO 1: define the x86-64 syscall number for clock_gettime here. */
+<<<<<<< HEAD
 #define SYS_clock_gettime	/* ??? */
+=======
+#define SYS_clock_gettime 228	/* ??? */
+>>>>>>> 2525c43d70d42982a3c8f448ed537438526f5a8f
 
 /*
  * TODO 2: my_clock_gettime() — clock_gettime(2) wrapper.
@@ -41,7 +45,12 @@ static long my_syscall(long number, long arg1, long arg2, long arg3,
 int my_clock_gettime(clockid_t clkid, struct timespec *tp)
 {
 	/* TODO: replace this with a call to my_syscall(...). */
+<<<<<<< HEAD
 	return -1;
+=======
+	//return -1;
+	return my_syscall(SYS_clock_gettime, clkid, (long) tp, 0, 0, 0, 0);
+>>>>>>> 2525c43d70d42982a3c8f448ed537438526f5a8f
 }
 
 /*
@@ -57,6 +66,14 @@ int my_clock_gettime(clockid_t clkid, struct timespec *tp)
  */
 time_t my_time(time_t *tloc)
 {
+<<<<<<< HEAD
 	/* TODO: implement using my_clock_gettime(). */
 	return (time_t)-1;
+=======
+	struct timespec ts;
+	my_clock_gettime(CLOCK_REALTIME, &ts);
+	if(tloc != NULL) *tloc = ts.tv_sec;
+	/* TODO: implement using my_clock_gettime(). */
+	return (time_t) ts.tv_sec;
+>>>>>>> 2525c43d70d42982a3c8f448ed537438526f5a8f
 }

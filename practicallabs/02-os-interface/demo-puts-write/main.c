@@ -1,4 +1,8 @@
 #include <stddef.h>
+<<<<<<< HEAD
+=======
+#include <stdint.h>
+>>>>>>> 2525c43d70d42982a3c8f448ed537438526f5a8f
 
 /* x86-64 syscall number for write (see /usr/include/asm/unistd_64.h). */
 #define SYS_write	1
@@ -46,7 +50,12 @@ long my_syscall(long number, long arg1, long arg2, long arg3,
 long my_write(int fd, const char *buf, size_t count)
 {
 	/* TODO: replace this with a call to my_syscall(...). */
+<<<<<<< HEAD
 	return -1;
+=======
+	//return -1;
+	return my_syscall(SYS_write, fd, (long)buf, count, 0, 0, 0);
+>>>>>>> 2525c43d70d42982a3c8f448ed537438526f5a8f
 }
 
 /*
@@ -64,6 +73,26 @@ long my_write(int fd, const char *buf, size_t count)
 int my_puts(const char *s)
 {
 	/* TODO: implement using my_write(). */
+<<<<<<< HEAD
+=======
+	uint32_t len = 0;
+	while(*(s + len) != '\0'){
+		len++;
+	}
+
+	char *buf = alloca(len + 1);
+
+	for(unsigned i = 0; i < len; ++i){
+		buf[i] = s[i];
+	}
+	buf[len] = '\n';
+	buf[len + 1] = '\0';
+
+	my_write(STDOUT_FILENO, buf, len + 1);
+
+	//my_write(STDOUT_FILENO, s, len);
+	//my_write(STDOUT_FILENO, "\n", 1);
+>>>>>>> 2525c43d70d42982a3c8f448ed537438526f5a8f
 	return -1;
 }
 

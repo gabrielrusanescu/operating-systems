@@ -21,7 +21,11 @@ long my_syscall(long number, long arg1, long arg2, long arg3,
 }
 
 /* TODO 1: define the x86-64 syscall number for getpid here. */
+<<<<<<< HEAD
 #define SYS_getpid	/* ??? */
+=======
+#define SYS_getpid 39	/* ??? */
+>>>>>>> 2525c43d70d42982a3c8f448ed537438526f5a8f
 
 /*
  * TODO 2: getpid(2) wrapper.
@@ -35,7 +39,12 @@ long my_syscall(long number, long arg1, long arg2, long arg3,
 long my_getpid(void)
 {
 	/* TODO: replace this with a call to my_syscall(...). */
+<<<<<<< HEAD
 	return -1;
+=======
+	//return -1;
+	return	my_syscall(SYS_getpid, 0, 0, 0, 0, 0, 0);
+>>>>>>> 2525c43d70d42982a3c8f448ed537438526f5a8f
 }
 
 

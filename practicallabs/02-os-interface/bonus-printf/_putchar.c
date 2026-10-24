@@ -21,4 +21,8 @@
 void _putchar(char character)
 {
 	/* TODO: call write() to output `character` to stdout (fd 1). */
+<<<<<<< HEAD
+=======
+	write(1, &character, 1);
+>>>>>>> 2525c43d70d42982a3c8f448ed537438526f5a8f
 }
