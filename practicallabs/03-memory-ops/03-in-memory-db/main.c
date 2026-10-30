@@ -41,6 +41,9 @@ struct database {
 void db_init(struct database *db)
 {
 	/* TODO 1 */
+	db -> records = NULL;
+	db -> count = 0;
+	db -> capacity = 0;
 }
 
 /*
@@ -58,7 +61,16 @@ void db_init(struct database *db)
 int db_add(struct database *db, int id, const char *name)
 {
 	/* TODO 2 */
-
+	if (db -> count == db -> capacity) {
+		db -> capacity += CHUNK;
+		void *ptr = realloc(db -> records, db -> capacity * sizeof(struct record));
+		if (ptr == NULL)
+			return -1;
+		db->records = ptr;
+	}
+	db->records[db->count].id = id;
+	strcpy(db->records[db->count].name, name);
+	db->count++;
 	return 0;
 }
 
@@ -79,6 +91,10 @@ void db_print(const struct database *db)
 void db_free(struct database *db)
 {
 	/* TODO 3 */
+	free(db->records);
+	db->records = NULL;
+	db->count=0;
+	db->capacity=0;
 }
 
 /*
