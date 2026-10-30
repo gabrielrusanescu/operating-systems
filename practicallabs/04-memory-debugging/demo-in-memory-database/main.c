@@ -80,7 +80,7 @@ static int db_grow(struct database *db)
  */
 int db_add(struct database *db, int id, const char *name)
 {
-	if (db->count == db->capacity - 1) {
+	if (db->count == db->capacity) {
 		if (db_grow(db) != 0)
 			return -1;
 	}
@@ -167,7 +167,7 @@ int main(void)
 		}
 
 		/* Remember the very first record so we can report it later. */
-		if (db.count == 1)
+		if (db.count >= 1)
 			first = &db.records[0];
 	}
 
