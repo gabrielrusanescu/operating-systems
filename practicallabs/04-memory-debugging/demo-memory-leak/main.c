@@ -50,7 +50,7 @@ int main(void)
 
 		lineno++;
 		printf("%3u: %s", lineno, shout);
+		free(shout);
 	}
-
 	return 0;
 }
