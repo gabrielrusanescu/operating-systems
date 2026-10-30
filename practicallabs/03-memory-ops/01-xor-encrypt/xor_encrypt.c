@@ -41,6 +41,8 @@ int main(int argc, char **argv)
 	 * size, and when it is known.
 	 */
 
+	unsigned char in_buf[BLOCK_SIZE], out_buf[BLOCK_SIZE];
+
 	if (argc != 3) {
 		fprintf(stderr, "usage: %s <input> <output>\n", argv[0]);
 		exit(EXIT_FAILURE);
@@ -71,6 +73,12 @@ int main(int argc, char **argv)
 		 *
 		 * Not every block is a full one.
 		 */
+		i = 0;
+		while (i < n) {
+			out_buf[i] = in_buf[i] ^ key[i];
+			++i;
+		}
+		//out_buf[i] = in_buf[i] ^ key[i];
 
 		if (fwrite(out_buf, 1, n, out) != n) {
 			perror("fwrite");
