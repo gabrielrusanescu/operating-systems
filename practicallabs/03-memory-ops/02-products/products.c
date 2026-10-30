@@ -73,7 +73,11 @@ int main(int argc, char **argv)
 		 * two.)  Allocation can fail; the labels at the end of main()
 		 * are where a failing run leaves.
 		 */
-
+		products[count].name = strdup(name_buf);
+		if(products[count].name == NULL) {
+			perror("strdup");
+			goto fail_products;
+		}
 		products[count].price = (unsigned int)strtoul(price_buf, NULL, 10);
 		count++;
 	}
@@ -90,11 +94,14 @@ int main(int argc, char **argv)
 	 * TODO 2: everything the loop allocated is still allocated.
 	 * Valgrind will tell you whether you got all of it.
 	 */
-
+	for (i = 0; i < count; ++i)
+		free(products[i].name);
 	return 0;
 
 fail_products:
 	/* TODO 2: a run that stops early has allocated names too. */
+	for (i = 0; i < count; ++i)
+		free(products[i].name);
 	fclose(f);
 fail:
 	return -1;
