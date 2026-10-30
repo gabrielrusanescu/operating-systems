@@ -39,6 +39,8 @@
  */
 static void tune_allocator(void)
 {
+	mallopt(M_MMAP_THRESHOLD, 0);
+	mallopt(M_TRIM_THRESHOLD, 0);
 }
 
 /* The value a pixel of frame n should hold after compositing. */
@@ -107,7 +109,7 @@ int main(int argc, char *argv[])
 		 * tuned run shows you that, make the promise explicit -- and
 		 * measure what keeping it costs.
 		 */
-		unsigned char *frame = malloc(FRAME_SIZE);
+		unsigned char *frame = calloc(1, FRAME_SIZE);
 
 		if (frame == NULL) {
 			perror("malloc");
