@@ -103,7 +103,11 @@ int main(int argc, char *argv[])
 	 * Think about the value mmap() returns when it fails, and about where
 	 * a failing run leaves from.
 	 */
-
+	buf = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+	if (!buf) {
+		perror("mmap");
+		goto fail_fd;
+	}
 	if (read_all(fd, buf, size) < 0)
 		goto fail_buf;
 	close(fd);
@@ -111,11 +115,12 @@ int main(int argc, char *argv[])
 	print_reversed(buf, size);
 
 	/* TODO 2: the buffer has done its job. */
-
+	munmap(buf, size);
 	return 0;
 
 fail_buf:
 	/* TODO 2: the buffer is still there on this path too. */
+	munmap(buf, size);
 fail_fd:
 	close(fd);
 fail:
