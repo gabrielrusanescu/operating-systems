@@ -59,7 +59,7 @@ static char *strbuf_finish(strbuf_t *sb)
 	char *result;
 
 	/* Trim the buffer down to exactly the bytes that were written. */
-	result = malloc(sb->len);
+	result = malloc(sb->len + 1);
 	if (result != NULL) {
 		memcpy(result, sb->data, sb->len);
 		result[sb->len] = '\0';
