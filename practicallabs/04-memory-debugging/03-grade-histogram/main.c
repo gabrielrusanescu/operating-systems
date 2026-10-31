@@ -22,7 +22,7 @@ struct stats {
 static void record_grade(struct stats *st, int grade)
 {
 	int bucket = grade / 10;
-
+	if (bucket >= NBUCKETS) bucket = NBUCKETS - 1;
 	st->total++;
 	st->counts[bucket]++;
 }
