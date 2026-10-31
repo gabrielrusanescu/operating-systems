@@ -39,15 +39,19 @@ static void copy_field(char *dst, const char *src)
 }
 
 /* Split one CSV line into its three fields. */
-static void parse_employee(char *line, struct employee *e)
+static int parse_employee(char *line, struct employee *e)
 {
 	char *name = strtok(line, ",");
 	char *department = strtok(NULL, ",");
 	char *salary = strtok(NULL, ",");
-
+	if (name == NULL || department == NULL || salary == NULL) {
+		perror("strtok");
+		return -1;
+	}
 	copy_field(e->name, name);
 	copy_field(e->department, department);
 	e->salary = atoi(salary);
+	return 0;
 }
 
 /* Find the payroll of a department, creating it on first sight. */
@@ -93,8 +97,8 @@ int main(int argc, char *argv[])
 	while (nemployees < MAX_EMPLOYEES &&
 	       fgets(line, sizeof(line), f) != NULL) {
 		line[strcspn(line, "\n")] = '\0';
-		parse_employee(line, &employees[nemployees]);
-		nemployees++;
+		if (!parse_employee(line, &employees[nemployees]))
+			nemployees++;
 	}
 
 	fclose(f);
