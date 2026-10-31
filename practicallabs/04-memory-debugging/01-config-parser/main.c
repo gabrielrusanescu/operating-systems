@@ -58,7 +58,6 @@ static int config_add(struct config *cfg, const char *key, const char *value)
 	}
 
 	cfg->count++;
-
 	return 0;
 }
 
@@ -82,8 +81,10 @@ static void config_free(struct config *cfg)
 {
 	size_t i;
 
-	for (i = 0; i < cfg->count; i++)
+	for (i = 0; i < cfg->count; i++) {
 		free(cfg->settings[i].key);
+		free(cfg->settings[i].value);
+	}
 
 	cfg->count = 0;
 }
@@ -144,6 +145,7 @@ int main(int argc, char *argv[])
 		char *value = config_get(&cfg, keys[i]);
 
 		printf("%s = %s\n", keys[i], value != NULL ? value : "(not set)");
+		free(value);
 	}
 
 	config_free(&cfg);
