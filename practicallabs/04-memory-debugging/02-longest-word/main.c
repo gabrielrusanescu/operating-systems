@@ -51,6 +51,7 @@ static void tracker_offer(struct tracker *t, const char *word)
 	if (t->longest != NULL && len <= t->length)
 		return;
 
+	if (t->longest != NULL) free(t->longest);
 	t->longest = strdup(word);
 	t->length = len;
 }
