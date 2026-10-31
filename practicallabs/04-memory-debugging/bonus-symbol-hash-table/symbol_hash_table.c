@@ -128,7 +128,7 @@ int symtab_insert(symbol_hash_table_t *table, const char *name,
 
 	entry->address = address;
 	entry->region = region;
-
+	entry->next = table->buckets[index];
 	/* Link the new node in at the head of its bucket. */
 	table->buckets[index] = entry;
 
@@ -152,7 +152,8 @@ int symtab_remove(symbol_hash_table_t *table, const char *name)
 		if (strcmp(entry->name, name) == 0) {
 			if (prev != NULL)
 				prev->next = entry->next;
-
+			else
+				table->buckets[index] = entry->next;
 			free(entry->name);
 			free(entry);
 			table->count--;
