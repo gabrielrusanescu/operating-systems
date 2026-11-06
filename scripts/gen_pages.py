@@ -57,6 +57,7 @@ from sessions import (  # noqa: E402  (the path has to be set up first)
     CONTENT_ROOT,
     REPO_ROOT,
     find_assets,
+    is_walked,
     site_tree,
     walk_tasks,
 )
@@ -73,11 +74,11 @@ NAV_FILE = "SUMMARY.md"
 
 # Where links to files that are not pages -- source code, headers, Makefiles --
 # are sent instead.
-REPO_BLOB_URL = "https://github.com/cs-pub-ro/operating-systems-sessions/blob/master"
+REPO_BLOB_URL = "https://github.com/cs-pub-ro/operating-systems/blob/main"
 
 # The same, for a directory that is not a page: the vendored `utils/printf`
 # tree, say, which is excluded from the site but still lives in the repository.
-REPO_TREE_URL = "https://github.com/cs-pub-ro/operating-systems-sessions/tree/master"
+REPO_TREE_URL = "https://github.com/cs-pub-ro/operating-systems/tree/main"
 
 # A Markdown link target: the `](target)` part, with an optional title.
 LINK_PATTERN = re.compile(r"(?<=\]\()([^)\s]+)(?=(?:\s+\"[^\"]*\")?\))")
@@ -183,8 +184,14 @@ def rewrite_target(target, readme_dir, root_prefix="", view=None):
     # `media/03-kernel/os-syscall.svg` from the lecture page, `../../media/...`
     # from a demo page below it.  The same holds for a deck that has not been
     # rendered into the working tree yet, which is why this is decided by the
-    # suffix rather than by whether the file happens to exist.
-    if CONTENT_ROOT in resolved.parents and resolved.suffix.lower() in ASSET_SUFFIXES:
+    # suffix rather than by whether the file happens to exist.  A file the walk
+    # never reaches -- `.vscode/launch.json`, anything under `utils/` -- is not
+    # copied whatever its suffix, so it is sent to GitHub below instead.
+    if (
+        CONTENT_ROOT in resolved.parents
+        and resolved.suffix.lower() in ASSET_SUFFIXES
+        and is_walked(resolved)
+    ):
         return target
 
     if resolved.is_file():
