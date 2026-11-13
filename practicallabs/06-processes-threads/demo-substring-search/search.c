@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
 	const char *data, *needle;
 	size_t size, chunk;
 	int nthreads, i;
+	int rc;
 
 	if (argc != 4) {
 		fprintf(stderr, "Usage: %s <file> <word> <threads>\n", argv[0]);
@@ -130,10 +131,12 @@ int main(int argc, char *argv[])
 	 */
 
 	/*TODO 1: calculate the chunk (nr of characters every thread will get)*/
-
+	chunk = size / nthreads;
 	for (i = 0; i < nthreads; i++) {
 		regions[i].id = i;
 		regions[i].needle = needle;
+		regions[i].start = data + i * chunk;
+		regions[i].len = (i == nthreads - 1) ? size - i * chunk : chunk;
 		/* TODO 1: compute start and len */
 	}
 
@@ -144,11 +147,22 @@ int main(int argc, char *argv[])
 	 * rather than setting errno; strerror() turns it into a message.
 	 */
 
+	for (i = 0; i < nthreads; ++i) {
+		rc = pthread_create(&threads[i], NULL, search_region, &regions[i]);
+		if (rc != 0) {
+			fprintf(stderr, "pthread create: %s\n", strerror(rc));
+			return 1;
+		}
+	}
+
 	/*
 	 * TODO 3: wait for every thread to finish, with pthread_join().
 	 * Without this, main() returns, the process ends, and the threads
 	 * still searching are gone with it.
 	 */
+
+	for (i = 0; i < nthreads; ++i)
+		pthread_join(threads[i], NULL);
 
 	munmap((void *) data, size);
 
