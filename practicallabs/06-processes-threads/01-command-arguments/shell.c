@@ -70,6 +70,20 @@ static void run_command(char *argv[])
 	 * successful exec never returns, so report the error and leave the
 	 * child with exit(127) if it does.  The parent waits with waitpid().
 	 */
+	 pid_t pid;
+	 int status;
+	 pid = fork();
+	 if (pid < 0) {
+		perror("fork failed");
+		return;
+	 }
+	 if (pid == 0) {
+		execvp(argv[0], argv);
+		perror(argv[0]);
+		exit(127);
+	 }
+	 if(waitpid(pid, &status, 0) < 0)
+	 	perror("waitpid");
 }
 
 int main(void)
