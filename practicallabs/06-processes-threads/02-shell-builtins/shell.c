@@ -80,7 +80,17 @@ static int run_builtin(char *argv[])
 	 * chdir() or exit() would affect only the child, which then vanishes,
 	 * leaving the shell unchanged.
 	 */
-
+	if(strcmp(argv[0], "exit") == 0)
+		exit(0);
+	if(strcmp(argv[0], "cd") == 0){
+		char *dir;
+		if(argv[1] != NULL)
+			dir = argv[1];
+		else dir = getenv("HOME");
+		if(dir == NULL) return 1;
+		if(chdir(dir) < 0) perror(dir);
+		return 1;
+	}
 	return 0;
 }
 
