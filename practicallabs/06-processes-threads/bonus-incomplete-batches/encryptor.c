@@ -90,7 +90,8 @@ static void xor_buffer(unsigned char *data, size_t size, const char *key)
 static void *encrypt_batch(void *arg)
 {
 	struct batch *b = arg;
-
+	unsigned char *data;
+	size_t size, i;
 	printf("thread %d: %zu files, %s .. %s\n", b->id, b->nfiles,
 	       b->files[0], b->files[b->nfiles - 1]);
 
@@ -101,7 +102,11 @@ static void *encrypt_batch(void *arg)
 	 * ever touch the same file.  A file that cannot be mapped has
 	 * already been reported; go on with the next one.
 	 */
-
+	for(i = 0; i < b->nfiles; ++i){
+		if(map_file(b->files[i], &data, &size) < 0) continue;
+		xor_buffer(data, size, b->key);
+		unmap_file(data, size);
+	}
 	return NULL;
 }
 
@@ -133,7 +138,8 @@ int main(int argc, char *argv[])
 	 * threads, not five: the division has to round up, and it has to do
 	 * so in integer arithmetic.
 	 */
-	nthreads = nfiles / batch_size;
+	//nthreads = nfiles / batch_size;
+	nthreads = (nfiles + batch_size - 1) / batch_size;
 	if (nthreads > MAX_THREADS) {
 		fprintf(stderr, "that would take %d threads, the limit is %d\n",
 			nthreads, MAX_THREADS);
@@ -151,14 +157,30 @@ int main(int argc, char *argv[])
 	 * the only one that is not `batch_size`; compute it from what is
 	 * left rather than special-casing the last index.
 	 */
-
+	for(i=0; i<nthreads; ++i){
+		size_t first = i*batch_size;
+		size_t left = nfiles-first;
+		batches[i].id = i;
+		batches[i].files = &files[first];
+		batches[i].nfiles=left<batch_size?left:batch_size;
+		batches[i].key=key;
+	}
 	/*
 	 * TODO 3: start one thread per batch, each running encrypt_batch()
 	 * with a pointer to its own batch.
 	 */
 
 	/* TODO 4: wait for all of them. */
-
+	for(i=0;i<nthreads;++i){
+		int rc=pthread_create(&threads[i], NULL, encrypt_batch, &batches[i]);
+		if(rc!=0){
+			fprintf(stderr, "pthread_create:%s\n", strerror(rc));
+			return 1;
+		}
+	}
+	for(i=0; i<nthreads; ++i){
+		pthread_join(threads[i], NULL);
+	}
 	printf("%zu files encrypted, %d thread(s)\n", nfiles, nthreads);
 
 	return 0;
