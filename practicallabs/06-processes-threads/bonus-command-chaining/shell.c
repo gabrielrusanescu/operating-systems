@@ -153,8 +153,14 @@ static int run_command(char *argv[], int background)
 	 * (WEXITSTATUS).  Print a line on stderr for anything other than a
 	 * normal exit with 0, so you can see what the shell saw.
 	 */
-
-	return 0;
+	if(WIFSIGNALED(status)){
+		fprintf(stderr, "%d killed by signal %d\n", (int)pid, WTERMSIG(status));
+		return 128 + WTERMSIG(status);
+	}
+	if(WEXITSTATUS(status) != 0){
+		fprintf(stderr, "%d exited with status %d\n", (int)pid, WEXITSTATUS(status));
+	}
+	return WEXITSTATUS(status);
 }
 
 /*
@@ -198,7 +204,12 @@ static void run_line(char *tokens[], int ntokens)
 		 * a builtin); otherwise call run_command() with `background`.  A
 		 * command that is skipped leaves `status` alone.
 		 */
-
+		if(strcmp(op, "&&") == 0){
+			;
+		}
+		else if(strcmp(op, "||") == 0 && status == 0) ;
+		else if(run_builtin(&tokens[start])) status = 0;
+		else status = run_command(&tokens[start], background);
 		if (next_op == NULL)
 			break;
 		op = next_op;
