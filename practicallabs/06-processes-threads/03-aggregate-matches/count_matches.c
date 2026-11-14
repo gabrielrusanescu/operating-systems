@@ -73,7 +73,6 @@ static size_t count_matches(const char *buf, size_t len, const char *needle)
 	const char *end = buf + len;
 	const char *p = buf;
 	size_t count = 0;
-
 	while (p + nlen <= end) {
 		p = memchr(p, needle[0], end - p);
 		if (p == NULL || p + nlen > end)
@@ -104,8 +103,9 @@ static void *count_region(void *arg)
 	 * Call count_matches() with the right members of `r`, save the result
 	 * in a member of `r`, and return a pointer to it.
 	 */
-
-	return NULL;
+	r->count = count_matches(r->start, r->len, r->needle);
+	return &r->count;
+	//return NULL;
 }
 
 int main(int argc, char *argv[])
@@ -140,13 +140,14 @@ int main(int argc, char *argv[])
 	 * ends in the next is seen by neither.  Fix the split so that no
 	 * match is lost, without any match being counted twice.
 	 */
+	size_t nlen = strlen(needle);
 	chunk = size / nthreads;
 	for (i = 0; i < nthreads; i++) {
 		size_t offset = (size_t) i * chunk;
-
+		regions[i].len = (i == nthreads - 1) ? size - offset : chunk + nlen - 1;
 		regions[i].id = i;
 		regions[i].start = data + offset;
-		regions[i].len = (i == nthreads - 1) ? size - offset : chunk;
+		//regions[i].len = (i == nthreads - 1) ? size - offset : chunk;
 		regions[i].needle = needle;
 		regions[i].count = 0;
 	}
@@ -166,7 +167,16 @@ int main(int argc, char *argv[])
 	 * `total`, and only after the others are gone.  (Then see TODO 3.)
 	 */
 	total = 0;
-
+	for(i = 0; i < nthreads; ++i){
+		size_t *res;
+		rc = pthread_join(threads[i], (void **) &res);
+		if(rc != 0){
+			fprintf(stderr, "%s\n", strerror(rc));
+			return 1;
+		}
+		printf("thread %d: %zu matches\n", regions[i].id, *res);
+		total += *res;
+	}
 	printf("total: %zu matches\n", total);
 
 	munmap((void *) data, size);
