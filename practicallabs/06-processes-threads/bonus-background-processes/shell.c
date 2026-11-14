@@ -98,6 +98,9 @@ static void reap_background(void)
 	 * child's PID while there is one to collect, and 0 when there is not.
 	 * Print a line for each child it returns.
 	 */
+	pid_t pid;
+	while((pid == waitpid(-1, NULL, WNOHANG)) > 0)
+		fprintf(stderr, "%d finished\n", pid);
 }
 
 /*
@@ -125,7 +128,10 @@ static void run_command(char *argv[], int background)
 	 * TODO 2: when `background` is set, print the child's PID on stderr
 	 * and return without waiting.  Otherwise wait for it, as before.
 	 */
-
+	if(background){
+		fprintf(stderr, "started %d\n", pid);
+		return;
+	}
 	if (waitpid(pid, NULL, 0) < 0)
 		perror("waitpid");
 }
@@ -155,7 +161,10 @@ int main(void)
 		 * program.  Otherwise run in the foreground.
 		 */
 		background = 0;
-
+		if(strcmp(tokens[ntokens-1], "&") == 0){
+			background = 1;
+			tokens[--ntokens] = NULL;
+		}
 		run_command(tokens, background);
 	}
 
