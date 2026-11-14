@@ -102,6 +102,9 @@ static void *encrypt_batch(void *arg)
 		 * touch the same file.  A file that cannot be mapped has already
 		 * been reported; go on with the next one.
 		 */
+		if(map_file(b->files[i], &data, &size) < 0) continue;
+		xor_buffer(data, size, b->key);
+		unmap_file(data, size);
 	}
 
 	return NULL;
@@ -150,14 +153,27 @@ int main(int argc, char *argv[])
 	 *
 	 * Batch i takes files[i * batch_size] .. files[(i + 1) * batch_size - 1].
 	 */
-
+	for (i = 0; i < nthreads; ++i){
+		batches[i].id = i;
+		batches[i].files = &files[i * batch_size];
+		batches[i].nfiles = batch_size;
+		batches[i].key = key;
+	}
 	/*
 	 * TODO 3: start one thread per batch, each running encrypt_batch()
 	 * with a pointer to its own batch.
 	 */
-
+	for (i = 0; i < nthreads; ++i){
+		int rc = pthread_create(&threads[i], NULL, encrypt_batch, &batches[i]);
+		if (rc != 0){
+			fprintf(stderr, "pthread_create: %s\n", strerror(rc));
+			return 1;
+		}
+	}
 	/* TODO 4: wait for all of them. */
-
+	for (i = 0; i < nthreads; ++i){
+		pthread_join(threads[i], NULL);
+	}
 	printf("%zu files encrypted, %d thread(s)\n", nfiles, nthreads);
 
 	return 0;
