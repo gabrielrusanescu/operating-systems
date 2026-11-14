@@ -204,7 +204,7 @@ static void run_line(char *tokens[], int ntokens)
 		 * a builtin); otherwise call run_command() with `background`.  A
 		 * command that is skipped leaves `status` alone.
 		 */
-		if(strcmp(op, "&&") == 0){
+		if(strcmp(op, "&&") == 0 && status != 0){
 			;
 		}
 		else if(strcmp(op, "||") == 0 && status == 0) ;
